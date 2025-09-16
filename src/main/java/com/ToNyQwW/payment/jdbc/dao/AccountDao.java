@@ -25,7 +25,7 @@ public class AccountDao implements Dao<Account> {
             SELECT account_id,
                    client_id,
                    balance,
-                   is_active,
+                   is_active
             FROM account
             WHERE account_id = ?
             """;
@@ -34,7 +34,7 @@ public class AccountDao implements Dao<Account> {
             SELECT account_id,
                    client_id,
                    balance,
-                   is_active,
+                   is_active
             FROM account
             """;
 
