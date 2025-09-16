@@ -17,6 +17,12 @@ public class ClientDao implements Dao<Client> {
 
     private static final ClientDao INSTANCE = new ClientDao();
 
+    private static final String SAVE_SQL = """
+            INSERT INTO client
+            (full_name, email, phone)
+            VALUES (?, ?, ?)
+            """;
+
     private static final String FIND_BY_ID_SQL = """
             SELECT client_id,
                    full_name,
@@ -34,22 +40,16 @@ public class ClientDao implements Dao<Client> {
             FROM client
             """;
 
-    private static final String DELETE_BY_ID_SQL = """
-            DELETE FROM client
-            WHERE client_id = ?
-            """;
-
-    private static final String SAVE_SQL = """
-            INSERT INTO client
-            (full_name, email, phone)
-            VALUES (?, ?, ?)
-            """;
-
     private static final String UPDATE_SQL = """
             UPDATE client
             SET full_name = ?,
                 email = ?,
                 phone = ?
+            WHERE client_id = ?
+            """;
+
+    private static final String DELETE_BY_ID_SQL = """
+            DELETE FROM client
             WHERE client_id = ?
             """;
 
@@ -60,18 +60,6 @@ public class ClientDao implements Dao<Client> {
         return INSTANCE;
     }
 
-
-    @Override
-    public boolean delete(int id) {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
-            prepareStatement.setInt(1, id);
-
-            return prepareStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
 
     @Override
     public Client save(Client client) {
@@ -97,17 +85,11 @@ public class ClientDao implements Dao<Client> {
     }
 
     @Override
-    public void update(Client client) {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement = connection.prepareStatement(UPDATE_SQL)) {
-            prepareStatement.setString(1, client.getFullName());
-            prepareStatement.setString(2, client.getEmail());
-            prepareStatement.setString(3, client.getPhone());
-            prepareStatement.setInt(4, client.getClientId());
-
-            prepareStatement.executeUpdate();
-
-        } catch (SQLException e) {
+    public Optional<Client> findById(int id) {
+        try (var connection = ConnectionManager.getConnection()) {
+            return findById(id, connection);
+        } catch (
+                SQLException e) {
             throw new DaoException(e);
         }
     }
@@ -123,16 +105,6 @@ public class ClientDao implements Dao<Client> {
             }
             return Optional.ofNullable(client);
         } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public Optional<Client> findById(int id) {
-        try (var connection = ConnectionManager.getConnection()) {
-            return findById(id, connection);
-        } catch (
-                SQLException e) {
             throw new DaoException(e);
         }
     }
@@ -161,5 +133,33 @@ public class ClientDao implements Dao<Client> {
                 resultSet.getString("email"),
                 resultSet.getString("phone")
         );
+    }
+
+    @Override
+    public void update(Client client) {
+        try (var connection = ConnectionManager.getConnection();
+             var prepareStatement = connection.prepareStatement(UPDATE_SQL)) {
+            prepareStatement.setString(1, client.getFullName());
+            prepareStatement.setString(2, client.getEmail());
+            prepareStatement.setString(3, client.getPhone());
+            prepareStatement.setInt(4, client.getClientId());
+
+            prepareStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        try (var connection = ConnectionManager.getConnection();
+             var prepareStatement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
+            prepareStatement.setInt(1, id);
+
+            return prepareStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 }
