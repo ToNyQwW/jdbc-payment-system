@@ -23,7 +23,7 @@ public class OrderDao extends AbstractDao<Order> {
                    amount,
                    status
             FROM orders
-            WHERE order_id = ?;
+            WHERE order_id = ?
             """;
 
     private static final String FIND_ALL_SQL = """
@@ -39,12 +39,12 @@ public class OrderDao extends AbstractDao<Order> {
             SET client_id = ?,
                 amount = ?,
                 status = ?
-            WHERE order_id = ?;
+            WHERE order_id = ?
             """;
 
     private static final String DELETE_BY_ID_SQL = """
             DELETE FROM orders
-            WHERE order_id = ?;
+            WHERE order_id = ?
             """;
 
     private OrderDao() {

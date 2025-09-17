@@ -15,13 +15,13 @@ class ClientDaoTest {
 
     private static final ClientDao clientDao = ClientDao.getInstance();
 
-    @BeforeAll
-    void beforeAll() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         TestDatabaseSetup.createTables();
     }
 
-    @BeforeEach
-    void beforeEach() throws Exception {
+    @AfterEach
+    void afterEach() throws Exception {
         TestDatabaseSetup.dropTables();
     }
 

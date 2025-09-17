@@ -21,16 +21,16 @@ class CreditCardDaoTest {
 
     private Account savedAccount;
 
-    @BeforeAll
-    void beforeAll() throws Exception {
-        TestDatabaseSetup.createTables();
-    }
-
     @BeforeEach
     void beforeEach() throws Exception {
-        TestDatabaseSetup.dropTables();
+        TestDatabaseSetup.createTables();
         Client client = clientDao.save(new Client("TestUser", "test@example.com", "000"));
         savedAccount = accountDao.save(new Account(client, 1000.0, true));
+    }
+
+    @AfterEach
+    void afterEach() throws Exception {
+        TestDatabaseSetup.dropTables();
     }
 
     @AfterAll

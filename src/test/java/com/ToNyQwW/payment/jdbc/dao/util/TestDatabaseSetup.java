@@ -54,16 +54,30 @@ public class TestDatabaseSetup {
                         status    order_status DEFAULT 'NEW'
                     );
                     """);
+
+            statement.execute("""
+                    CREATE TABLE payment
+                    (
+                        payment_id   SERIAL PRIMARY KEY,
+                        from_account INT            NOT NULL REFERENCES account (account_id),
+                        to_account   INT            NOT NULL REFERENCES account (account_id),
+                        order_id     INT            NOT NULL REFERENCES orders (order_id),
+                        amount       NUMERIC(15, 2) NOT NULL,
+                        created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                    """);
         }
     }
 
     public static void dropTables() throws Exception {
         try (var connection = ConnectionManager.getConnection();
              var statement = connection.createStatement()) {
-            statement.executeUpdate("DELETE FROM account");
-            statement.executeUpdate("DELETE FROM client");
-            statement.executeUpdate(("DELETE FROM credit_card"));
-            statement.executeUpdate("DELETE FROM orders");
+            statement.executeUpdate("DROP TABLE payment");
+            statement.executeUpdate(("DROP TABLE credit_card"));
+            statement.executeUpdate("DROP TABLE account");
+            statement.executeUpdate("DROP TABLE orders");
+            statement.executeUpdate("DROP TABLE client");
+            statement.executeUpdate("DROP TYPE order_status");
         }
     }
 }

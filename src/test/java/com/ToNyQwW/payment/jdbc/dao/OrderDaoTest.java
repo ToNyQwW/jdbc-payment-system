@@ -19,15 +19,15 @@ class OrderDaoTest {
 
     private Client savedClient;
 
-    @BeforeAll
-    void beforeAll() throws Exception {
-        TestDatabaseSetup.createTables();
-    }
-
     @BeforeEach
     void beforeEach() throws Exception {
-        TestDatabaseSetup.dropTables();
+        TestDatabaseSetup.createTables();
         savedClient = clientDao.save(new Client("OrderUser", "order@example.com", "777"));
+    }
+
+    @AfterEach
+    void afterEach() throws Exception {
+        TestDatabaseSetup.dropTables();
     }
 
     @AfterAll

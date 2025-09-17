@@ -25,7 +25,7 @@ public class PaymentDao extends AbstractDao<Payment> {
                    amount,
                    created_at
             FROM payment
-            WHERE payment_id = ?;
+            WHERE payment_id = ?
             """;
 
     private static final String FIND_ALL_SQL = """
@@ -45,12 +45,12 @@ public class PaymentDao extends AbstractDao<Payment> {
                 order_id = ?,
                 amount = ?,
                 created_at = ?
-            WHERE payment_id = ?;
+            WHERE payment_id = ?
             """;
 
     private static final String DELETE_BY_ID_SQL = """
             DELETE FROM payment
-            WHERE payment_id = ?;
+            WHERE payment_id = ?
             """;
 
     private PaymentDao() {
