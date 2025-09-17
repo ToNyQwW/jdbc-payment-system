@@ -7,6 +7,13 @@ public class Order {
     private Double amount;
     private OrderStatus status;
 
+    public Order(int orderId, Client client, Double amount, OrderStatus status) {
+        this.orderId = orderId;
+        this.client = client;
+        this.amount = amount;
+        this.status = status;
+    }
+
     public Order(Client client, Double amount, OrderStatus status) {
         this.client = client;
         this.amount = amount;
