@@ -11,6 +11,15 @@ public class Payment {
     private Double amount;
     private LocalDateTime createdAt;
 
+    public Payment(int paymentId, Account fromAccount, Account toAccount, Order order, Double amount, LocalDateTime createdAt) {
+        this.paymentId = paymentId;
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
+        this.order = order;
+        this.amount = amount;
+        this.createdAt = createdAt;
+    }
+
     public Payment(Account fromAccount, Account toAccount, Order order, Double amount, LocalDateTime createdAt) {
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;
