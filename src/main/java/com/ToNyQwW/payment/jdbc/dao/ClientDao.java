@@ -1,19 +1,12 @@
 package com.ToNyQwW.payment.jdbc.dao;
 
-
 import com.ToNyQwW.payment.jdbc.entity.Client;
-import com.ToNyQwW.payment.jdbc.exception.DaoException;
-import com.ToNyQwW.payment.jdbc.util.ConnectionManager;
 
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
-public class ClientDao implements Dao<Client> {
+public class ClientDao extends AbstractDao<Client> {
 
     private static final ClientDao INSTANCE = new ClientDao();
 
@@ -60,106 +53,58 @@ public class ClientDao implements Dao<Client> {
         return INSTANCE;
     }
 
-
     @Override
-    public Client save(Client client) {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement
-                     = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            prepareStatement.setString(1, client.getFullName());
-            prepareStatement.setString(2, client.getEmail());
-            prepareStatement.setString(3, client.getPhone());
-
-            prepareStatement.executeUpdate();
-
-            var generatedKeys = prepareStatement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int id = generatedKeys.getInt("client_id");
-                client.setClientId(id);
-            }
-            return client;
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    protected String getSaveSql() {
+        return SAVE_SQL;
     }
 
     @Override
-    public Optional<Client> findById(int id) {
-        try (var connection = ConnectionManager.getConnection()) {
-            return findById(id, connection);
-        } catch (
-                SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public Optional<Client> findById(int id, Connection connection) {
-        try (var prepareStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            prepareStatement.setInt(1, id);
-
-            var resultSet = prepareStatement.executeQuery();
-            Client client = null;
-            if (resultSet.next()) {
-                client = getClient(resultSet);
-            }
-            return Optional.ofNullable(client);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    protected String getFindByIdSql(){
+        return FIND_BY_ID_SQL;
     }
 
     @Override
-    public List<Client> findAll() {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement = connection.prepareStatement(FIND_ALL_SQL)) {
-
-            var resultSet = prepareStatement.executeQuery();
-            List<Client> clients = new ArrayList<>();
-            while (resultSet.next()) {
-                Client client = getClient(resultSet);
-                clients.add(client);
-            }
-            return clients;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    protected String getFindAllSql(){
+        return FIND_ALL_SQL;
     }
 
-    private static Client getClient(ResultSet resultSet) throws SQLException {
+    @Override
+    protected String getUpdateSql(){
+        return UPDATE_SQL;
+    }
+
+    @Override
+    protected String getDeleteSql(){
+        return DELETE_BY_ID_SQL;
+    }
+
+    @Override
+    protected void setSaveStatement(PreparedStatement preparedStatement, Client client) throws SQLException {
+        preparedStatement.setString(1, client.getFullName());
+        preparedStatement.setString(2, client.getEmail());
+        preparedStatement.setString(3, client.getPhone());
+    }
+
+    @Override
+    protected void setUpdateStatement(PreparedStatement preparedStatement, Client client) throws SQLException {
+        preparedStatement.setString(1, client.getFullName());
+        preparedStatement.setString(2, client.getEmail());
+        preparedStatement.setString(3, client.getPhone());
+        preparedStatement.setInt(4, client.getClientId());
+    }
+
+    @Override
+    protected void setGeneratedKey(Client client, ResultSet keys) throws SQLException {
+        client.setClientId(keys.getInt(1));
+    }
+
+    @Override
+    protected Client mapResultSet(ResultSet resultSet) throws SQLException {
         return new Client(
                 resultSet.getInt("client_id"),
                 resultSet.getString("full_name"),
                 resultSet.getString("email"),
                 resultSet.getString("phone")
         );
-    }
-
-    @Override
-    public void update(Client client) {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement = connection.prepareStatement(UPDATE_SQL)) {
-            prepareStatement.setString(1, client.getFullName());
-            prepareStatement.setString(2, client.getEmail());
-            prepareStatement.setString(3, client.getPhone());
-            prepareStatement.setInt(4, client.getClientId());
-
-            prepareStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public boolean delete(int id) {
-        try (var connection = ConnectionManager.getConnection();
-             var prepareStatement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
-            prepareStatement.setInt(1, id);
-
-            return prepareStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
     }
 }
