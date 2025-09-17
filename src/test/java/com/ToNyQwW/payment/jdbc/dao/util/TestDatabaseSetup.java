@@ -30,6 +30,10 @@ public class TestDatabaseSetup {
                     """);
 
             statement.execute("""
+                    CREATE TYPE order_status AS ENUM ('NEW','PAID','CANCELLED');
+                    """);
+
+            statement.execute("""
                     CREATE TABLE credit_card
                     (
                         card_id      SERIAL PRIMARY KEY,
@@ -38,6 +42,16 @@ public class TestDatabaseSetup {
                         credit_limit NUMERIC(15, 2) NOT NULL,
                         balance      NUMERIC(15, 2) DEFAULT 0.0,
                         is_blocked   BOOLEAN        DEFAULT FALSE
+                    );
+                    """);
+
+            statement.execute("""
+                    CREATE TABLE orders
+                    (
+                        order_id  SERIAL PRIMARY KEY,
+                        client_id INT            NOT NULL REFERENCES client (client_id) ON DELETE CASCADE,
+                        amount    NUMERIC(15, 2) NOT NULL,
+                        status    order_status DEFAULT 'NEW'
                     );
                     """);
         }
@@ -49,6 +63,7 @@ public class TestDatabaseSetup {
             statement.executeUpdate("DELETE FROM account");
             statement.executeUpdate("DELETE FROM client");
             statement.executeUpdate(("DELETE FROM credit_card"));
+            statement.executeUpdate("DELETE FROM orders");
         }
     }
 }

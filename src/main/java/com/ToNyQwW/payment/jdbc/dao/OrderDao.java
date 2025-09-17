@@ -9,6 +9,8 @@ import java.sql.SQLException;
 
 public class OrderDao extends AbstractDao<Order> {
 
+    private static final OrderDao INSTANCE = new OrderDao();
+
     private static final String SAVE_SQL = """
             INSERT INTO orders
             (client_id, amount, status)
@@ -44,6 +46,14 @@ public class OrderDao extends AbstractDao<Order> {
             DELETE FROM orders
             WHERE order_id = ?;
             """;
+
+    private OrderDao() {
+
+    }
+
+    public static OrderDao getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     protected String getSaveSql() {
