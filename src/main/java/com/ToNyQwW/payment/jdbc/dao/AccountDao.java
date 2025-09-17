@@ -79,18 +79,16 @@ public class AccountDao extends AbstractDao<Account> {
     }
 
     @Override
-    protected void setSaveStatement(PreparedStatement ps, Account account) throws SQLException {
-        ps.setInt(1, account.getClient().getClientId());
-        ps.setDouble(2, account.getBalance());
-        ps.setBoolean(3, account.isActive());
+    protected void setSaveStatement(PreparedStatement preparedStatement, Account account) throws SQLException {
+        preparedStatement.setInt(1, account.getClient().getClientId());
+        preparedStatement.setDouble(2, account.getBalance());
+        preparedStatement.setBoolean(3, account.isActive());
     }
 
     @Override
-    protected void setUpdateStatement(PreparedStatement ps, Account account) throws SQLException {
-        ps.setInt(1, account.getClient().getClientId());
-        ps.setDouble(2, account.getBalance());
-        ps.setBoolean(3, account.isActive());
-        ps.setInt(4, account.getAccountId());
+    protected void setUpdateStatement(PreparedStatement preparedStatement, Account account) throws SQLException {
+        setSaveStatement(preparedStatement, account);
+        preparedStatement.setInt(4, account.getAccountId());
     }
 
     @Override
@@ -99,13 +97,15 @@ public class AccountDao extends AbstractDao<Account> {
     }
 
     @Override
-    protected Account mapResultSet(ResultSet rs) throws SQLException {
-        var client = ClientDao.getInstance().findById(rs.getInt("client_id")).orElse(null);
+    protected Account mapResultSet(ResultSet resultSet) throws SQLException {
+        var client = ClientDao.getInstance()
+                .findById(resultSet.getInt("client_id"), resultSet.getStatement().getConnection())
+                .orElse(null);
         return new Account(
-                rs.getInt("account_id"),
+                resultSet.getInt("account_id"),
                 client,
-                rs.getDouble("balance"),
-                rs.getBoolean("is_active")
+                resultSet.getDouble("balance"),
+                resultSet.getBoolean("is_active")
         );
     }
 }

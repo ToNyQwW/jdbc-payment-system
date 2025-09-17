@@ -28,6 +28,18 @@ public class TestDatabaseSetup {
                         is_active  BOOLEAN        DEFAULT TRUE
                     );
                     """);
+
+            statement.execute("""
+                    CREATE TABLE credit_card
+                    (
+                        card_id      SERIAL PRIMARY KEY,
+                        account_id   INT            NOT NULL UNIQUE REFERENCES account (account_id) ON DELETE CASCADE,
+                        card_number  VARCHAR(16)    NOT NULL UNIQUE,
+                        credit_limit NUMERIC(15, 2) NOT NULL,
+                        balance      NUMERIC(15, 2) DEFAULT 0.0,
+                        is_blocked   BOOLEAN        DEFAULT FALSE
+                    );
+                    """);
         }
     }
 
@@ -36,6 +48,7 @@ public class TestDatabaseSetup {
              var statement = connection.createStatement()) {
             statement.executeUpdate("DELETE FROM account");
             statement.executeUpdate("DELETE FROM client");
+            statement.executeUpdate(("DELETE FROM credit_card"));
         }
     }
 }

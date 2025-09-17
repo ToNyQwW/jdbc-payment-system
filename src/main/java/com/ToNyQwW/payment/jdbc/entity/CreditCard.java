@@ -9,6 +9,15 @@ public class CreditCard {
     private double balance;
     private boolean isBlocked;
 
+    public CreditCard(int cardId, Account account, String cardNumber, Double creditLimit, double balance, boolean isBlocked) {
+        this.cardId = cardId;
+        this.account = account;
+        this.cardNumber = cardNumber;
+        this.creditLimit = creditLimit;
+        this.balance = balance;
+        this.isBlocked = isBlocked;
+    }
+
     public CreditCard(Account account, String cardNumber, Double creditLimit, double balance, boolean isBlocked) {
         this.account = account;
         this.cardNumber = cardNumber;

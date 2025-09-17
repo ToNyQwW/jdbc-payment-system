@@ -87,9 +87,7 @@ public class ClientDao extends AbstractDao<Client> {
 
     @Override
     protected void setUpdateStatement(PreparedStatement preparedStatement, Client client) throws SQLException {
-        preparedStatement.setString(1, client.getFullName());
-        preparedStatement.setString(2, client.getEmail());
-        preparedStatement.setString(3, client.getPhone());
+        setSaveStatement(preparedStatement, client);
         preparedStatement.setInt(4, client.getClientId());
     }
 
